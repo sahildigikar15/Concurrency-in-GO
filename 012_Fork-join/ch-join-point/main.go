@@ -2,19 +2,18 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"time"
 )
 
 func main() {
 	now := time.Now()
-	var wg sync.WaitGroup
-	wg.Add(1)
+	done := make(chan struct{})
+
 	go func() {
-		defer wg.Done()
 		work()
+		done <- struct{}{}
 	}() // fork point
-	wg.Wait()
+	<-done
 	fmt.Println("elapsed:", time.Since(now))
 	fmt.Println("done waiting, main exit")
 }
